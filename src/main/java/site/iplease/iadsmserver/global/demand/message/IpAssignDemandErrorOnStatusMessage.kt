@@ -1,4 +1,4 @@
-package site.iplease.iadsmserver.domain.demand.message
+package site.iplease.iadsmserver.global.demand.message
 
 data class IpAssignDemandErrorOnStatusMessage(
     val demandId: Long,

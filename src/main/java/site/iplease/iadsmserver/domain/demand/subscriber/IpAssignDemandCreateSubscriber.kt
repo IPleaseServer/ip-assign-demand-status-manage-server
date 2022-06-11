@@ -1,6 +1,6 @@
 package site.iplease.iadsmserver.domain.demand.subscriber
 
-import site.iplease.iadsmserver.domain.demand.message.IpAssignDemandCreateMessage
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
 
 interface IpAssignDemandCreateSubscriber {
     fun subscribe(message: IpAssignDemandCreateMessage)

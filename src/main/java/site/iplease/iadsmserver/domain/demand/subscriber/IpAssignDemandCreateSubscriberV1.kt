@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import site.iplease.iadsmserver.domain.demand.dto.DemandStatusDto
-import site.iplease.iadsmserver.domain.demand.message.IpAssignDemandCreateMessage
-import site.iplease.iadsmserver.domain.demand.message.IpAssignDemandErrorOnStatusMessage
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandErrorOnStatusMessage
 import site.iplease.iadsmserver.domain.demand.service.DemandStatusService
 import site.iplease.iadsmserver.domain.demand.type.DemandStatusPolicyGroup
 import site.iplease.iadsmserver.domain.demand.util.DemandStatusConverter
