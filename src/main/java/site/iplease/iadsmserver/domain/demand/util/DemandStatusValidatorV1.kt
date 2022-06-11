@@ -3,12 +3,12 @@ package site.iplease.iadsmserver.domain.demand.util
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import site.iplease.iadsmserver.domain.demand.dto.DemandStatusDto
+import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
 import site.iplease.iadsmserver.domain.demand.exception.DemandStatusAlreadyExistsException
 import site.iplease.iadsmserver.domain.demand.exception.WrongDemandStatusTypeException
 import site.iplease.iadsmserver.domain.demand.repository.DemandStatusRepository
-import site.iplease.iadsmserver.domain.demand.type.DemandStatusPolicyGroup
-import site.iplease.iadsmserver.domain.demand.type.DemandStatusType
+import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusPolicyGroup
+import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusType
 
 @Component
 class DemandStatusValidatorV1(
@@ -16,7 +16,8 @@ class DemandStatusValidatorV1(
 ): DemandStatusValidator {
     override fun validate(policy: DemandStatusPolicyGroup, demand: DemandStatusDto): Mono<DemandStatusDto> =
         policy.toMono().flatMap {
-            when(it) {DemandStatusPolicyGroup.CREATE -> validateNotExists(demand).flatMap { validateStatusCreate(demand) } }
+            when(it) {
+                DemandStatusPolicyGroup.CREATE -> validateNotExists(demand).flatMap { validateStatusCreate(demand) } }
         }.map { demand }
 
     //해당 예약이 존재하지 않아야한다.

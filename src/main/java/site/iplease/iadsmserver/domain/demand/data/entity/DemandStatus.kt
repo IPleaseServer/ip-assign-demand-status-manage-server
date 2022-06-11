@@ -1,8 +1,8 @@
-package site.iplease.iadsmserver.domain.demand.entity
+package site.iplease.iadsmserver.domain.demand.data.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
-import site.iplease.iadsmserver.domain.demand.type.DemandStatusType
+import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusType
 
 @Table
 data class DemandStatus (

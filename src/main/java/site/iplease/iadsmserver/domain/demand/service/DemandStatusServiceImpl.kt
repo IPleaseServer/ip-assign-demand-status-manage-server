@@ -2,7 +2,7 @@ package site.iplease.iadsmserver.domain.demand.service
 
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import site.iplease.iadsmserver.domain.demand.dto.DemandStatusDto
+import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
 import site.iplease.iadsmserver.domain.demand.repository.DemandStatusRepository
 import site.iplease.iadsmserver.domain.demand.util.DemandStatusConverter
 

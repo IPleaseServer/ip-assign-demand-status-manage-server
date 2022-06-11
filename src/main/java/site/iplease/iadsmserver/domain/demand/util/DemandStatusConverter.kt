@@ -1,8 +1,8 @@
 package site.iplease.iadsmserver.domain.demand.util
 
 import reactor.core.publisher.Mono
-import site.iplease.iadsmserver.domain.demand.dto.DemandStatusDto
-import site.iplease.iadsmserver.domain.demand.entity.DemandStatus
+import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
+import site.iplease.iadsmserver.domain.demand.data.entity.DemandStatus
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
 
 interface DemandStatusConverter {
