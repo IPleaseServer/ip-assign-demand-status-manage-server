@@ -1,6 +1,6 @@
 server:
-  port: ${IP_ASSIGN_DEMAND_SERVER_PORT}
-  address: ${IP_ASSIGN_DEMAND_SERVER_IP}
+  port: ${IP_ASSIGN_DEMAND_STATUS_MANAGE_SERVER_PORT}
+  address: ${IP_ASSIGN_DEMAND_STATUS_MANAGE_SERVER_IP}
 spring:
   rabbitmq:
     host: ${MQ_HOSTNAME}
