@@ -2,15 +2,19 @@
 ### IpAssignDemandCreateSequence
 **input** message that type IpAssignDemandCreate
 
+-> **logic** verify that target DemandId
+-> **logic** convert target DemandId target DemandStatusData
+-> **logic** add that target DemandStatusData to Persistence
+
 -> when onError **output** message that type IpAssignDemandErrorOnStatus
 
--> when onSuccess **output** grpc SendAlarm 
+-> when onSuccess **output** grpc SendAlarm
 
 IpAssignDemandCreate MessageSpec
 ```json5
 //ROUTING_KEY = ipAssignDemandCreate
 {
-  "id": 13, //demandId
+  "demandId": 13, //demandId
   "issuerId": 25
 }
 ```
@@ -19,7 +23,7 @@ IpAssignDemandErrorOnStatus MessageSpec
 ```json5
 //ROUTING_KEY = ipAssignDemandErrorOnStatus
 {
-  "id": 13, //demandId
+  "demandId": 13, //demandId
   "message": "이미 id가 13인 신청에 대한 정보가 존재합니다!"
 }
 ```
