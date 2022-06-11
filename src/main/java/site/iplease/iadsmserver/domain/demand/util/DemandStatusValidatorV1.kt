@@ -16,7 +16,7 @@ class DemandStatusValidatorV1(
 ): DemandStatusValidator {
     override fun validate(policy: DemandStatusPolicyGroup, demand: DemandStatusDto): Mono<DemandStatusDto> =
         policy.toMono().flatMap {
-            when(it) {
+            when(it!!) {
                 DemandStatusPolicyGroup.CREATE -> validateNotExists(demand).flatMap { validateStatusCreate(demand) } }
         }.map { demand }
 
