@@ -2,9 +2,13 @@
 ### IpAssignDemandCreateSequence
 **input** message that type IpAssignDemandCreate
 
+-> **logic** verify that target DemandId
+-> **logic** convert target DemandId target DemandStatusData
+-> **logic** add that target DemandStatusData to Persistence
+
 -> when onError **output** message that type IpAssignDemandErrorOnStatus
 
--> when onSuccess **output** grpc SendAlarm 
+-> when onSuccess **output** grpc SendAlarm
 
 IpAssignDemandCreate MessageSpec
 ```json5
