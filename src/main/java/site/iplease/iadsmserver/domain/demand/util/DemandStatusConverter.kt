@@ -7,4 +7,6 @@ import site.iplease.iadsmserver.domain.demand.message.IpAssignDemandCreateMessag
 
 interface DemandStatusConverter {
     fun toDto(message: IpAssignDemandCreateMessage): Mono<DemandStatusDto>
+    fun toDto(entity: DemandStatus): Mono<DemandStatusDto>
+    fun toEntity(demand: DemandStatusDto): Mono<DemandStatus>
 }
