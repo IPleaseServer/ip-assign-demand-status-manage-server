@@ -38,7 +38,7 @@ class IpAssignDemandCreateSubscriberV1(
     private fun convert(message: IpAssignDemandCreateMessage) = message.toMono().flatMap(demandStatusConverter::toDto)
     private fun validate(demand: DemandStatusDto): Mono<DemandStatusDto> = demandStatusValidator.validate(DemandStatusPolicyGroup.CREATE, demand)
     private fun add(demand: DemandStatusDto): Mono<DemandStatusDto> = demandStatusService.add(demand)
-    private fun sendAlarm(): Mono<Unit> = pushAlarmService.sendAlarm("예약이 등록됬어요!", "담당 선생님이 예약을 확인하시면 다시 알려드릴게요 :)")
+    private fun sendAlarm(): Mono<Unit> = pushAlarmService.publish("예약이 등록됬어요!", "담당 선생님이 예약을 확인하시면 다시 알려드릴게요 :)")
     private fun sendError(error: Throwable, demandId: Long): Mono<Unit> =
         IpAssignDemandErrorOnStatusMessage(demandId = demandId, message = error.localizedMessage)
             .let { messagePublishService.publish(MessageType.DEMAND_ERROR_ON_STATUS, it) }
