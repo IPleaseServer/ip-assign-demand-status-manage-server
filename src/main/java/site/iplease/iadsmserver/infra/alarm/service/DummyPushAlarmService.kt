@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 
-@Service
+@Service //TODO PushAlarmService 개발 후 실제 서비스 구현체 작성 및 더미서비스 비활성화
 class DummyPushAlarmService: PushAlarmService {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
