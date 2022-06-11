@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "site.iplease"
-version = "1.0.0-RELEASE"
+version = "1.0.1-rc1" //DummyService 이슈(todo참조) 해결 후 RELEASE버전으로 승격예정입니다
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations {
