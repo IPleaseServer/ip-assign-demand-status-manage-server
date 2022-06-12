@@ -1,4 +1,4 @@
-package site.iplease.iadsmserver.domain.demand.subscriber
+package site.iplease.iadsmserver.global.demand.subscriber
 
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
 

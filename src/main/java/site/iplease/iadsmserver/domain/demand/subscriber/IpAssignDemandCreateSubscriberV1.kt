@@ -10,6 +10,7 @@ import site.iplease.iadsmserver.domain.demand.service.DemandStatusService
 import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusPolicyGroup
 import site.iplease.iadsmserver.domain.demand.util.DemandStatusConverter
 import site.iplease.iadsmserver.domain.demand.util.DemandStatusValidator
+import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandCreateSubscriber
 import site.iplease.iadsmserver.infra.message.service.MessagePublishService
 import site.iplease.iadsmserver.infra.message.type.MessageType
 import site.iplease.iadsmserver.infra.alarm.service.PushAlarmService
