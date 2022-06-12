@@ -26,22 +26,22 @@ class IpAssignDemandCreateSubscriberV1(
     override fun subscribe(message: IpAssignDemandCreateMessage) {
         onStart(message)
             .flatMap { logic(it) }
-            .flatMap { demand -> onSuccess(demand) }
-            .onErrorResume { throwable -> onError(message.demandId, throwable) }
+            .flatMap { demand -> onSuccess(message.issuerId, demand) }
+            .onErrorResume { throwable -> onError(message, throwable) }
             .block()
     }
 
     private fun onStart(message: IpAssignDemandCreateMessage) = convert(message)
     private fun logic(demand: DemandStatusDto) = demand.let(this::validate).flatMap(this::add)
-    private fun onSuccess(demand: DemandStatusDto) = sendAlarm()
-    private fun onError(demandId: Long, error: Throwable) = sendError(error, demandId)
+    private fun onSuccess(issuerId: Long, demand: DemandStatusDto) = sendAlarm(receiverId = issuerId)
+    private fun onError(demand: IpAssignDemandCreateMessage, error: Throwable) = sendError(error, demandId = demand.demandId, issuerId = demand.issuerId)
 
     private fun convert(message: IpAssignDemandCreateMessage) = message.toMono().flatMap(demandStatusConverter::toDto)
     private fun validate(demand: DemandStatusDto): Mono<DemandStatusDto> = demandStatusValidator.validate(
         DemandStatusPolicyGroup.CREATE, demand)
     private fun add(demand: DemandStatusDto): Mono<DemandStatusDto> = demandStatusService.add(demand)
-    private fun sendAlarm(): Mono<Unit> = pushAlarmService.publish("예약이 등록됬어요!", "담당 선생님이 예약을 확인하시면 다시 알려드릴게요 :)")
-    private fun sendError(error: Throwable, demandId: Long): Mono<Unit> =
-        IpAssignDemandErrorOnStatusMessage(demandId = demandId, message = error.localizedMessage)
+    private fun sendAlarm(receiverId: Long): Mono<Unit> = pushAlarmService.publish(receiverId, "예약이 등록됬어요!", "담당 선생님이 예약을 확인하시면 다시 알려드릴게요 :)")
+    private fun sendError(error: Throwable, demandId: Long, issuerId: Long): Mono<Unit> =
+        IpAssignDemandErrorOnStatusMessage(demandId = demandId, issuerId = issuerId, message = error.localizedMessage)
             .let { messagePublishService.publish(MessageType.DEMAND_ERROR_ON_STATUS, it) }
 }

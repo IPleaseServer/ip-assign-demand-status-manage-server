@@ -14,7 +14,7 @@ IpAssignDemandCreate MessageSpec
 ```json5
 //ROUTING_KEY = ipAssignDemandCreate
 {
-  "demandId": 13, //demandId
+  "demandId": 13,
   "issuerId": 25
 }
 ```
@@ -23,7 +23,8 @@ IpAssignDemandErrorOnStatus MessageSpec
 ```json5
 //ROUTING_KEY = ipAssignDemandErrorOnStatus
 {
-  "demandId": 13, //demandId
+  "demandId": 13,
+  "issuerId": 12,
   "message": "이미 id가 13인 신청에 대한 정보가 존재합니다!"
 }
 ```
