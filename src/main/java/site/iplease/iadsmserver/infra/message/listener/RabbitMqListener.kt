@@ -16,7 +16,7 @@ class RabbitMqListener(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    @RabbitListener(queues = ["iplease.ip.assign.demand"])
+    @RabbitListener(queues = ["iplease.ip.assign.demand.status.manage"])
     fun listen(message: Message) {
         val routingKey = message.messageProperties.receivedRoutingKey
         when(MessageType.of(routingKey)) {
