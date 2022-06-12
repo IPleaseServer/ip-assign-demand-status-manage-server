@@ -1,5 +1,5 @@
 spring:
-  application.name: ip-assign-demand-server
+  application.name: ip-assign-demand-status-manage-server
   profiles:
     active: ${SPRING_PROFILE}
 server.shutdown: graceful
