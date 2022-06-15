@@ -1,47 +1,29 @@
 package site.iplease.iadsmserver.domain.demand.subscriber
 
 import org.springframework.stereotype.Component
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
-import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
+import site.iplease.iadsmserver.domain.demand.service.DemandStatusService
+import site.iplease.iadsmserver.domain.demand.util.DemandStatusConverter
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandErrorOnStatusMessage
-import site.iplease.iadsmserver.domain.demand.service.DemandStatusService
-import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusPolicyGroup
-import site.iplease.iadsmserver.domain.demand.util.DemandStatusConverter
-import site.iplease.iadsmserver.domain.demand.util.DemandStatusValidator
 import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandCreateSubscriber
+import site.iplease.iadsmserver.infra.alarm.service.PushAlarmService
 import site.iplease.iadsmserver.infra.message.service.MessagePublishService
 import site.iplease.iadsmserver.infra.message.type.MessageType
-import site.iplease.iadsmserver.infra.alarm.service.PushAlarmService
 
 @Component
 class IpAssignDemandCreateSubscriberV1(
     private val demandStatusConverter: DemandStatusConverter,
-    private val demandStatusValidator: DemandStatusValidator,
     private val demandStatusService: DemandStatusService,
     private val pushAlarmService: PushAlarmService,
     private val messagePublishService: MessagePublishService,
 ): IpAssignDemandCreateSubscriber {
     override fun subscribe(message: IpAssignDemandCreateMessage) {
-        onStart(message)
-            .flatMap { logic(it) }
-            .flatMap { demandStatus -> onSuccess(message.issuerId, demandStatus) }
-            .onErrorResume { throwable -> onError(message, throwable) }
-            .block()
+        demandStatusConverter.toDto(message)//메세지를 DemandStatusDto로 변환한다.
+            .flatMap { demandStatusService.createDemand(it) }//Service에게로 예약추가로직을 위임한다. //it.let(this::validate).flatMap(this::add)
+            .flatMap { pushAlarmService.publish(message.issuerId, "신청이 등록됬어요!", "담당 선생님이 신청을 확인하시면 다시 알려드릴게요 :)") }//추가 성공시, 유저에게 푸시알람을 전송한다.
+            .onErrorResume { throwable -> //추가 실패시 예약추가 실패 메세지를 전파한다.
+                IpAssignDemandErrorOnStatusMessage(demandId = message.demandId, issuerId = message.issuerId, message = throwable.localizedMessage)
+                    .let { messagePublishService.publish(MessageType.DEMAND_ERROR_ON_STATUS, it) }
+            }.block()
     }
-
-    private fun onStart(message: IpAssignDemandCreateMessage) = convert(message)
-    private fun logic(demandStatus: DemandStatusDto) = demandStatus.let(this::validate).flatMap(this::add)
-    private fun onSuccess(issuerId: Long, demand: DemandStatusDto) = sendAlarm(receiverId = issuerId)
-    private fun onError(demand: IpAssignDemandCreateMessage, error: Throwable) = sendError(error, demandId = demand.demandId, issuerId = demand.issuerId)
-
-    private fun convert(message: IpAssignDemandCreateMessage) = message.toMono().flatMap(demandStatusConverter::toDto)
-    private fun validate(demandStatus: DemandStatusDto): Mono<DemandStatusDto> = demandStatusValidator.validate(
-        DemandStatusPolicyGroup.CREATE, demandStatus)
-    private fun add(demandStatus: DemandStatusDto): Mono<DemandStatusDto> = demandStatusService.add(demandStatus)
-    private fun sendAlarm(receiverId: Long): Mono<Unit> = pushAlarmService.publish(receiverId, "신청이 등록됬어요!", "담당 선생님이 신청을 확인하시면 다시 알려드릴게요 :)")
-    private fun sendError(error: Throwable, demandId: Long, issuerId: Long): Mono<Unit> =
-        IpAssignDemandErrorOnStatusMessage(demandId = demandId, issuerId = issuerId, message = error.localizedMessage)
-            .let { messagePublishService.publish(MessageType.DEMAND_ERROR_ON_STATUS, it) }
 }
