@@ -24,7 +24,7 @@ class RabbitMqListener(
     @RabbitListener(queues = ["iplease.ip.assign.demand.status.manage"])
     fun listen(message: Message) {
         val routingKey = message.messageProperties.receivedRoutingKey
-        val payload = message.body.toString()
+        val payload = String(message.body)
         handleMessage(MessageType.of(routingKey), payload)
             .doOnError{ throwable ->
                 logger.error("메세지를 직렬화하는도중 오류가 발생하였습니다!")
