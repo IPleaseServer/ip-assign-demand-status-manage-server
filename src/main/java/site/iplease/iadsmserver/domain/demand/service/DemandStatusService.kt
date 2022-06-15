@@ -6,5 +6,5 @@ import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
 
 interface DemandStatusService {
     fun cancelDemand(demand: DemandDto): Mono<Unit>
-    fun createDemand(it: DemandStatusDto): Mono<DemandStatusDto>
+    fun createDemand(demandStatus: DemandStatusDto): Mono<DemandStatusDto>
 }

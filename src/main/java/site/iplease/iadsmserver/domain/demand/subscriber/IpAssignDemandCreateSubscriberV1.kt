@@ -24,7 +24,6 @@ class IpAssignDemandCreateSubscriberV1(
             .onErrorResume { throwable -> //추가 실패시 예약추가 실패 메세지를 전파한다.
                 IpAssignDemandErrorOnStatusMessage(demandId = message.demandId, issuerId = message.issuerId, message = throwable.localizedMessage)
                     .let { messagePublishService.publish(MessageType.DEMAND_ERROR_ON_STATUS, it) }
-            }
-            .block()
+            }.block()
     }
 }
