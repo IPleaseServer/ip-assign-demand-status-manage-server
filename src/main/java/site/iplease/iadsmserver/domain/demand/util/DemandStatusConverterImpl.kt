@@ -3,12 +3,19 @@ package site.iplease.iadsmserver.domain.demand.util
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import site.iplease.iadsmserver.domain.demand.data.dto.DemandDto
 import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
 import site.iplease.iadsmserver.domain.demand.data.entity.DemandStatus
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelErrorOnStatusMessage
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
 
 @Component
 class DemandStatusConverterImpl: DemandStatusConverter {
+    override fun toDto(demand: DemandDto): Mono<DemandStatusDto> =
+        demand.toMono()
+            .map { DemandStatusDto(demandId = demand.id) }
+
     override fun toDto(message: IpAssignDemandCreateMessage) =
         message.toMono()
             .map { DemandStatusDto(
@@ -29,5 +36,17 @@ class DemandStatusConverterImpl: DemandStatusConverter {
                 id = it.id,
                 demandId = it.demandId,
                 status = it.status
+            ) }
+
+    override fun toErrorMessage(message: IpAssignDemandCancelMessage, error: Throwable): Mono<IpAssignDemandCancelErrorOnStatusMessage> =
+        message.toMono()
+            .map {  IpAssignDemandCancelErrorOnStatusMessage(
+                id = it.id,
+                issuerId = it.issuerId,
+                title = it.title,
+                description = it.description,
+                usage = it.usage,
+                expireAt = it.expireAt,
+                message = error.localizedMessage
             ) }
 }
