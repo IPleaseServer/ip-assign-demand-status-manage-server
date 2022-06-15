@@ -18,5 +18,5 @@ class DemandStatusServiceImpl(
             .flatMap { entity -> demandStatusConverter.toDto(entity) }//저장한 Entity를 Dto로 전환하여 반환한다.
 
     override fun remove(demandStatus: DemandStatusDto): Mono<Unit> =
-            demandStatusRepository.deleteById(demandStatus.id).then(Unit.toMono())
+            demandStatusRepository.deleteByDemandId(demandStatus.demandId).then(Unit.toMono())
 }
