@@ -10,6 +10,7 @@ import site.iplease.iadsmserver.domain.demand.repository.DemandStatusRepository
 import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusPolicyGroup
 import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusType
 import site.iplease.iadsmserver.domain.demand.exception.UnCancellableDemandStatusException
+import site.iplease.iadsmserver.domain.demand.exception.UnknownDemandStatusException
 
 @Component
 class DemandStatusValidatorV1(
@@ -27,6 +28,7 @@ class DemandStatusValidatorV1(
         demandStatusRepository.existsByDemandId(demand.demandId)
             .flatMap {
                 if(it == beExists) Unit.toMono()
+                else if(beExists) Mono.error(UnknownDemandStatusException("해당 예약ID를 가지는 예약상태정보를 찾을 수 없습니다! - ${demand.demandId}"))
                 else Mono.error(DemandStatusAlreadyExistsException("해당 예약ID를 가지는 예약상태정보가 이미 존재합니다!", demand.demandId))
             }
 
