@@ -1,16 +1,9 @@
 package site.iplease.iadsmserver.domain.demand.subscriber
 
 import org.springframework.stereotype.Component
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
-import site.iplease.iadsmserver.domain.demand.data.dto.DemandDto
-import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
-import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusPolicyGroup
 import site.iplease.iadsmserver.domain.demand.service.DemandStatusService
 import site.iplease.iadsmserver.domain.demand.util.DemandConverter
 import site.iplease.iadsmserver.domain.demand.util.DemandStatusConverter
-import site.iplease.iadsmserver.domain.demand.util.DemandStatusValidator
-import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelErrorOnStatusMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelMessage
 import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandCancelSubscriber
 import site.iplease.iadsmserver.infra.alarm.service.PushAlarmService
@@ -24,36 +17,14 @@ class IpAssignDemandCancelSubscriberV1(
     private val demandStatusConverter: DemandStatusConverter,
     private val demandStatusService: DemandStatusService,
     private val messagePublishService: MessagePublishService,
-    private val demandStatusValidator: DemandStatusValidator
 ): IpAssignDemandCancelSubscriber {
     override fun subscribe(message: IpAssignDemandCancelMessage) {
-        onStart(message)
-            .flatMap { logic(it) }
-            .flatMap { demand -> onSuccess(demand) }
-            .onErrorResume { throwable -> onError(message, throwable) }
-            .block()
+        demandConverter.toDto(message)//메세지를 DemandDto로 변환한다.
+            .flatMap { demand -> demandStatusService.cancelDemand(demand) }//Service에게로 예약취소로직을 위임한다.
+            .flatMap { _ -> pushAlarmService.publish(message.issuerId, "신청이 취소됬어요!", "마음이 바뀌시면 언제든지 다시 신청해주세요 :>") }//취소 성공시, 유저에게 푸시알람을 전송한다.
+            .onErrorResume { throwable -> //취소 실패시, 예약취소 실패 메세지를 전파한다.
+                demandStatusConverter.toErrorMessage(message, throwable)//예약취소 실패메세지를 구성한다.
+                    .flatMap { messagePublishService.publish(MessageType.DEMAND_ERROR_ON_STATUS, it) } //구성한 실패메세지를 발행한다.
+            }.block()
     }
-
-    private fun onStart(message: IpAssignDemandCancelMessage): Mono<DemandDto> = convert(message)
-    private fun logic(demand: DemandDto): Mono<DemandDto> =
-        demandStatusConverter.toDto(demand)
-            .flatMap { demandStatus -> validate(demandStatus) }
-            .flatMap { demandStatus -> removeDemandStatus(demandStatus) }
-            .map { demand }
-    private fun onSuccess(demand: DemandDto): Mono<Unit> = sendAlarm(receiverId = demand.issuerId)
-    private fun onError(demand: IpAssignDemandCancelMessage, error: Throwable): Mono<Unit> = sendError(error, demand)
-
-    private fun convert(message: IpAssignDemandCancelMessage) = message.toMono().flatMap(demandConverter::toDto)
-    private fun removeDemandStatus(demandStatus: DemandStatusDto): Mono<Unit> = demandStatusService.remove(demandStatus)
-    private fun validate(demandStatus: DemandStatusDto): Mono<DemandStatusDto> = demandStatusValidator.validate(DemandStatusPolicyGroup.CANCEL, demandStatus)
-    private fun sendAlarm(receiverId: Long): Mono<Unit> = pushAlarmService.publish(receiverId, "신청이 취소됬어요!", "마음이 바뀌시면 언제든지 다시 신청해주세요 :>")
-    private fun sendError(error: Throwable, demand: IpAssignDemandCancelMessage): Mono<Unit> = IpAssignDemandCancelErrorOnStatusMessage(
-            id = demand.id,
-            issuerId = demand.issuerId,
-            title = demand.title,
-            description = demand.description,
-            usage = demand.usage,
-            expireAt = demand.expireAt,
-            message = error.localizedMessage
-        ).let { messagePublishService.publish(MessageType.DEMAND_ERROR_ON_STATUS, it) }
 }
