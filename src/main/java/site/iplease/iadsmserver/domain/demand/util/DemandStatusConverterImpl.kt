@@ -12,6 +12,10 @@ import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessag
 
 @Component
 class DemandStatusConverterImpl: DemandStatusConverter {
+    override fun toDto(demandId: Long): Mono<DemandStatusDto> =
+        demandId.toMono()
+            .map { DemandStatusDto(demandId = demandId) }
+
     override fun toDto(demand: DemandDto): Mono<DemandStatusDto> =
         demand.toMono()
             .map { DemandStatusDto(demandId = demand.id) }
