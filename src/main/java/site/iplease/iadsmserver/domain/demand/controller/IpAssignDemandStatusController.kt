@@ -35,6 +35,6 @@ class IpAssignDemandStatusController(
     @PutMapping("/reject")
     fun rejectDemand(@PathVariable demandId: Long, @RequestBody request: RejectDemandRequest): Mono<ResponseEntity<Unit>> =
         demandStatusService.rejectDemand(demandId, request.reason)
-            .flatMap { demandStatus -> demandStatusConverter.toRejectMessage(demandStatus) }
+            .flatMap { demandStatus -> demandStatusConverter.toRejectMessage(demandStatus, request.reason) }
             .map { _ -> ResponseEntity.ok(Unit) }
 }

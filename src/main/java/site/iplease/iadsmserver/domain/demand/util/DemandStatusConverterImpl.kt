@@ -9,6 +9,7 @@ import site.iplease.iadsmserver.domain.demand.data.entity.DemandStatus
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelErrorOnStatusMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandRejectMessage
 
 @Component
 class DemandStatusConverterImpl: DemandStatusConverter {
@@ -53,4 +54,11 @@ class DemandStatusConverterImpl: DemandStatusConverter {
                 expireAt = it.expireAt,
                 message = error.localizedMessage
             ) }
+
+    override fun toRejectMessage(demandStatus: DemandStatusDto, reason: String): Mono<IpAssignDemandRejectMessage> =
+        demandStatus.toMono().map { IpAssignDemandRejectMessage(
+            demandId = it.demandId,
+            originStatus = it.status,
+            reason = reason
+        ) }
 }
