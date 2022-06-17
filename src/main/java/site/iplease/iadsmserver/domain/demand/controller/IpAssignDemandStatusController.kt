@@ -1,6 +1,7 @@
 package site.iplease.iadsmserver.domain.demand.controller
 
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -15,6 +16,7 @@ import site.iplease.iadsmserver.global.demand.message.IpAssignDemandConfirmMessa
 import site.iplease.iadsmserver.infra.message.service.MessagePublishService
 import site.iplease.iadsmserver.infra.message.type.MessageType
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/demand/{demandId}/status")
 class IpAssignDemandStatusController(
