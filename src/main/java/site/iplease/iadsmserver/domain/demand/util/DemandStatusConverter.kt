@@ -7,6 +7,7 @@ import site.iplease.iadsmserver.domain.demand.data.entity.DemandStatus
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelErrorOnStatusMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandRejectMessage
 
 interface DemandStatusConverter {
     fun toDto(demandId: Long): Mono<DemandStatusDto>
@@ -17,4 +18,5 @@ interface DemandStatusConverter {
     fun toEntity(demand: DemandStatusDto): Mono<DemandStatus>
 
     fun toErrorMessage(message: IpAssignDemandCancelMessage, error: Throwable):  Mono<IpAssignDemandCancelErrorOnStatusMessage>
+    fun toRejectMessage(demandStatus: DemandStatusDto?): Mono<IpAssignDemandRejectMessage>
 }
