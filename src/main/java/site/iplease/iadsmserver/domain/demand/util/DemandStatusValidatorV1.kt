@@ -19,6 +19,7 @@ class DemandStatusValidatorV1(
                 DemandStatusPolicyGroup.CREATE -> validateExists(demand, false).flatMap { validateStatus(demand, DemandStatusType.CREATE) }
                 DemandStatusPolicyGroup.CANCEL -> validateExists(demand).flatMap { validateStatusCancellable(demand) }
                 DemandStatusPolicyGroup.CONFIRM -> validateExists(demand).flatMap { validateStatusChangeable(demand, DemandStatusType.CONFIRM) }
+                DemandStatusPolicyGroup.REJECT -> validateExists(demand).flatMap { validateStatusChangeable(demand, DemandStatusType.REJECT) }
             }
         }.flatMap { demandStatusRepository.findByDemandId(demand.demandId) }
 
