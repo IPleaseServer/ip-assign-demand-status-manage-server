@@ -45,7 +45,7 @@ class IpAssignDemandStatusController(
 
     @PutMapping("/accept")
     fun acceptDemand(@RequestHeader("X-Authorize-Id") issuerId: Long,
-                     @PathVariable demandId: String,
+                     @PathVariable demandId: Long,
                      @RequestBody request: AcceptDemandRequest
     ): Mono<ResponseEntity<Unit>> =
         demandStatusService.acceptDemand(demandId, request.assignIp)
