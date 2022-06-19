@@ -5,6 +5,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
@@ -33,8 +34,10 @@ class IpAssignDemandStatusController(
             .map { response -> ResponseEntity.ok(response) }
 
     @PutMapping("/reject")
-    fun rejectDemand(@PathVariable demandId: Long, @RequestBody request: RejectDemandRequest): Mono<ResponseEntity<Unit>> =
+    fun rejectDemand(@RequestHeader("X-Authorize-Id") issuerId: Long,
+                     @PathVariable demandId: Long,
+                     @RequestBody request: RejectDemandRequest): Mono<ResponseEntity<Unit>> =
         demandStatusService.rejectDemand(demandId, request.reason)
-            .flatMap { demandStatus -> demandStatusConverter.toRejectMessage(demandStatus, request.reason) }
+            .flatMap { demandStatus -> demandStatusConverter.toRejectMessage(demandStatus, request.reason, issuerId) }
             .map { _ -> ResponseEntity.ok(Unit) }
 }

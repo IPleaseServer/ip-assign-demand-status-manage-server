@@ -18,5 +18,5 @@ interface DemandStatusConverter {
     fun toEntity(demand: DemandStatusDto): Mono<DemandStatus>
 
     fun toErrorMessage(message: IpAssignDemandCancelMessage, error: Throwable):  Mono<IpAssignDemandCancelErrorOnStatusMessage>
-    fun toRejectMessage(demandStatus: DemandStatusDto, reason: String): Mono<IpAssignDemandRejectMessage>
+    fun toRejectMessage(demandStatus: DemandStatusDto, reason: String, issuerId: Long): Mono<IpAssignDemandRejectMessage>
 }
