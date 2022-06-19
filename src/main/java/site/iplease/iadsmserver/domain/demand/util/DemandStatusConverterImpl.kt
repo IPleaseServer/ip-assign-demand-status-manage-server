@@ -55,9 +55,10 @@ class DemandStatusConverterImpl: DemandStatusConverter {
                 message = error.localizedMessage
             ) }
 
-    override fun toRejectMessage(demandStatus: DemandStatusDto, reason: String): Mono<IpAssignDemandRejectMessage> =
+    override fun toRejectMessage(demandStatus: DemandStatusDto, reason: String, issuerId: Long): Mono<IpAssignDemandRejectMessage> =
         demandStatus.toMono().map { IpAssignDemandRejectMessage(
             demandId = it.demandId,
+            issuerId = issuerId,
             originStatus = it.status,
             reason = reason
         ) }

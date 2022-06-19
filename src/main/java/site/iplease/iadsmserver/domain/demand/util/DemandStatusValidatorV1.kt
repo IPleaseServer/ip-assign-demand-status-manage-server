@@ -21,7 +21,11 @@ class DemandStatusValidatorV1(
                 DemandStatusPolicyGroup.CONFIRM -> validateExists(demand).flatMap { validateStatusChangeable(demand, DemandStatusType.CONFIRM) }
                 DemandStatusPolicyGroup.REJECT -> validateExists(demand).flatMap { validateStatusChangeable(demand, DemandStatusType.REJECT) }
             }
-        }.flatMap { demandStatusRepository.findByDemandId(demand.demandId) }
+        }.flatMap { demandStatusRepository.existsByDemandId(demand.demandId) }
+            .flatMap {  isExists ->
+                if(isExists) demandStatusRepository.findByDemandId(demand.demandId)
+                else demand.toMono()
+        }
 
     private fun validateExists(demand: DemandStatusDto, beExists: Boolean = true) =
         demandStatusRepository.existsByDemandId(demand.demandId)
