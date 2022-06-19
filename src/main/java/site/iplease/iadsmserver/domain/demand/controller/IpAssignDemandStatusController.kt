@@ -39,5 +39,6 @@ class IpAssignDemandStatusController(
                      @RequestBody request: RejectDemandRequest): Mono<ResponseEntity<Unit>> =
         demandStatusService.rejectDemand(demandId, request.reason)
             .flatMap { demandStatus -> demandStatusConverter.toRejectMessage(demandStatus, request.reason, issuerId) }
+            .flatMap { message -> messagePublishService.publish(MessageType.IP_ASSIGN_DEMAND_REJECT, message) }
             .map { _ -> ResponseEntity.ok(Unit) }
 }

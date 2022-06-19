@@ -44,6 +44,5 @@ class DemandStatusServiceImpl(
             .flatMap { demandStatus -> demandStatusValidator.validate(DemandStatusPolicyGroup.REJECT, demandStatus) }
             .flatMap { demandStatus -> demandStatusConverter.toEntity(demandStatus) }
             .flatMap { entity -> demandStatusRepository.save(entity.copy(status = DemandStatusType.REJECT)).map { entity } }
-            .flatMap { entity -> demandStatusRepository.save(entity) }
             .flatMap { entity -> demandStatusConverter.toDto(entity) }
 }
