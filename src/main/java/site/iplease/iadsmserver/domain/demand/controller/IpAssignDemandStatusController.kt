@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
+import site.iplease.iadsmserver.domain.demand.data.request.AcceptDemandRequest
 import site.iplease.iadsmserver.domain.demand.data.request.RejectDemandRequest
 import site.iplease.iadsmserver.domain.demand.data.response.ConfirmDemandResponse
 import site.iplease.iadsmserver.domain.demand.service.DemandStatusService
@@ -40,5 +41,15 @@ class IpAssignDemandStatusController(
         demandStatusService.rejectDemand(demandId, request.reason)
             .flatMap { demandStatus -> demandStatusConverter.toRejectMessage(demandStatus, request.reason, issuerId) }
             .flatMap { message -> messagePublishService.publish(MessageType.IP_ASSIGN_DEMAND_REJECT, message) }
+            .map { _ -> ResponseEntity.ok(Unit) }
+
+    @PutMapping("/accept")
+    fun acceptDemand(@RequestHeader("X-Authorize-Id") issuerId: Long,
+                     @PathVariable demandId: String,
+                     @RequestBody request: AcceptDemandRequest
+    ): Mono<ResponseEntity<Unit>> =
+        demandStatusService.acceptDemand(demandId, request.assignIp)
+            .flatMap { demandStatus -> demandStatusConverter.toAcceptMessage(demandStatus, issuerId, request.assignIp) }
+            .flatMap { message -> messagePublishService.publish(MessageType.IP_ASSIGN_DEMAND_ACCEPT, message) }
             .map { _ -> ResponseEntity.ok(Unit) }
 }

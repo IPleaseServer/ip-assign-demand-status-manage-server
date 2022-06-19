@@ -9,4 +9,5 @@ interface DemandStatusService {
     fun createDemand(demandStatus: DemandStatusDto): Mono<DemandStatusDto>
     fun confirmDemand(demandId: Long): Mono<DemandStatusDto>
     fun rejectDemand(demandId: Long, reason: String): Mono<DemandStatusDto>
+    fun acceptDemand(demandId: String, assignIp: String): Mono<DemandStatusDto>
 }
