@@ -1,7 +1,8 @@
 package site.iplease.iadsmserver.domain.demand.data.type
 
 enum class DemandStatusType {
-    CREATE, CONFIRM, REJECT;
+    CREATE, CONFIRM, REJECT, ACCEPT;
+
     fun isChangeable(status: DemandStatusType): Boolean = Companion.isChangeable(this, status)
 
     companion object {
