@@ -9,8 +9,8 @@ enum class DemandStatusType {
         private val cancellable: Set<DemandStatusType> = setOf(CREATE)
         //initialize 문제로인해, 아래와 같은 방식으로 binding합니다.
         private val changeable: Map<DemandStatusType, Set<DemandStatusType>> = mapOf(
-            CREATE to setOf(CONFIRM),
-            CONFIRM to setOf(CREATE, REJECT),
+            CREATE to setOf(CONFIRM, ACCEPT, REJECT),
+            CONFIRM to setOf(CREATE, ACCEPT, REJECT),
             REJECT to setOf()
         )
         fun isCancellable(status: DemandStatusType): Boolean = cancellable.contains(status)
