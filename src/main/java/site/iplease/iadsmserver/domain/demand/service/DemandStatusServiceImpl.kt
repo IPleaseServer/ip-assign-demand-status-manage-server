@@ -50,7 +50,7 @@ class DemandStatusServiceImpl(
 
     override fun acceptDemand(demandId: Long, assignIp: String): Mono<DemandStatusDto> =
         assignIpValidator.validate(assignIp)
-            .flatMap {demandStatusConverter.toDto(demandId = demandId)}
+            .flatMap { demandStatusConverter.toDto(demandId = demandId) }
             .flatMap { demandStatus -> demandStatusValidator.validate(DemandStatusPolicyGroup.ACCEPT, demandStatus) }
             .flatMap { demandStatus -> demandStatusConverter.toEntity(demandStatus) }
             .flatMap { entity -> demandStatusRepository.save(entity.copy(status = DemandStatusType.ACCEPT)).map { entity } }

@@ -1,11 +1,13 @@
 package site.iplease.iadsmserver.domain.demand.util
 
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import site.iplease.iadsmserver.domain.demand.exception.MalformedIpException
 
+@Component
 class AssignIpValidatorImpl: AssignIpValidator {
-    private val regex = "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}\$".let { Regex(it) }
+    private val regex = Regex("^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}\$")
     override fun validate(assignIp: String): Mono<Unit> =
         assignIp.toMono()
             .map { assignIp.matches(regex) }
