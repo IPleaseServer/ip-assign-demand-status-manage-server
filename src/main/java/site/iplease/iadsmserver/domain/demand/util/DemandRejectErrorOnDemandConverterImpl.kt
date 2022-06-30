@@ -14,6 +14,6 @@ class DemandRejectErrorOnDemandConverterImpl: DemandRejectErrorOnDemandConverter
                 demandId = message.demandId,
                 issuerId = message.issuerId,
                 originStatus = message.originStatus,
-                errorMessage = message.message
+                message = message.message
             ) }
 }

@@ -5,5 +5,4 @@ import site.iplease.iadsmserver.domain.demand.data.dto.DemandRejectErrorOnDemand
 
 interface DemandErrorService {
     fun handle(demand: DemandRejectErrorOnDemandDto): Mono<Unit>
-
 }
