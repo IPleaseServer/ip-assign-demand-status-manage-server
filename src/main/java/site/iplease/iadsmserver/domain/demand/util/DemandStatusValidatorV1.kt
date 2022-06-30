@@ -11,7 +11,8 @@ import site.iplease.iadsmserver.domain.demand.exception.*
 
 @Component
 class DemandStatusValidatorV1(
-    private val demandStatusRepository: DemandStatusRepository
+    private val demandStatusRepository: DemandStatusRepository,
+    private val demandStatusConverter: DemandStatusConverter
 ): DemandStatusValidator {
     override fun validate(policy: DemandStatusPolicyGroup, demand: DemandStatusDto): Mono<DemandStatusDto> =
         policy.toMono().flatMap {
@@ -20,11 +21,13 @@ class DemandStatusValidatorV1(
                 DemandStatusPolicyGroup.CANCEL -> validateExists(demand).flatMap { validateStatusCancellable(demand) }
                 DemandStatusPolicyGroup.CONFIRM -> validateExists(demand).flatMap { validateStatusChangeable(demand, DemandStatusType.CONFIRM) }
                 DemandStatusPolicyGroup.REJECT -> validateExists(demand).flatMap { validateStatusChangeable(demand, DemandStatusType.REJECT) }
+                DemandStatusPolicyGroup.ACCEPT -> validateExists(demand).flatMap { validateStatusChangeable(demand, DemandStatusType.ACCEPT) }
             }
         }.flatMap { demandStatusRepository.existsByDemandId(demand.demandId) }
-            .flatMap {  isExists ->
-                if(isExists) demandStatusRepository.findByDemandId(demand.demandId)
-                else demand.toMono()
+        .flatMap { isExists ->
+            if (isExists) demandStatusRepository.findByDemandId(demand.demandId)
+                .flatMap { demand -> demandStatusConverter.toDto(demand) }
+            else demand.toMono()
         }
 
     private fun validateExists(demand: DemandStatusDto, beExists: Boolean = true) =

@@ -8,6 +8,7 @@ import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
 import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusPolicyGroup
 import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusType
 import site.iplease.iadsmserver.domain.demand.repository.DemandStatusRepository
+import site.iplease.iadsmserver.domain.demand.util.AssignIpValidator
 import site.iplease.iadsmserver.domain.demand.util.DemandRejectReasonValidator
 import site.iplease.iadsmserver.domain.demand.util.DemandStatusConverter
 import site.iplease.iadsmserver.domain.demand.util.DemandStatusValidator
@@ -17,7 +18,8 @@ class DemandStatusServiceImpl(
     private val demandStatusConverter: DemandStatusConverter,
     private val demandStatusValidator: DemandStatusValidator,
     private val demandStatusRepository: DemandStatusRepository,
-    private val demandRejectReasonValidator: DemandRejectReasonValidator
+    private val demandRejectReasonValidator: DemandRejectReasonValidator,
+    private val assignIpValidator: AssignIpValidator
 ): DemandStatusService {
     override fun cancelDemand(demand: DemandDto): Mono<Unit> =
         demandStatusConverter.toDto(demand)
@@ -44,5 +46,13 @@ class DemandStatusServiceImpl(
             .flatMap { demandStatus -> demandStatusValidator.validate(DemandStatusPolicyGroup.REJECT, demandStatus) }
             .flatMap { demandStatus -> demandStatusConverter.toEntity(demandStatus) }
             .flatMap { entity -> demandStatusRepository.save(entity.copy(status = DemandStatusType.REJECT)).map { entity } }
+            .flatMap { entity -> demandStatusConverter.toDto(entity) }
+
+    override fun acceptDemand(demandId: Long, assignIp: String): Mono<DemandStatusDto> =
+        assignIpValidator.validate(assignIp)
+            .flatMap { demandStatusConverter.toDto(demandId = demandId) }
+            .flatMap { demandStatus -> demandStatusValidator.validate(DemandStatusPolicyGroup.ACCEPT, demandStatus) }
+            .flatMap { demandStatus -> demandStatusConverter.toEntity(demandStatus) }
+            .flatMap { entity -> demandStatusRepository.save(entity.copy(status = DemandStatusType.ACCEPT)).map { entity } }
             .flatMap { entity -> demandStatusConverter.toDto(entity) }
 }

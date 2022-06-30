@@ -4,5 +4,6 @@ enum class DemandStatusPolicyGroup {
     CREATE,
     CANCEL,
     CONFIRM,
-    REJECT
+    REJECT,
+    ACCEPT
 }

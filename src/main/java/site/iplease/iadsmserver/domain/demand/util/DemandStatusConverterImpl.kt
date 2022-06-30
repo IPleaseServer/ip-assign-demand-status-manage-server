@@ -6,10 +6,7 @@ import reactor.kotlin.core.publisher.toMono
 import site.iplease.iadsmserver.domain.demand.data.dto.DemandDto
 import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
 import site.iplease.iadsmserver.domain.demand.data.entity.DemandStatus
-import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelErrorOnStatusMessage
-import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelMessage
-import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
-import site.iplease.iadsmserver.global.demand.message.IpAssignDemandRejectMessage
+import site.iplease.iadsmserver.global.demand.message.*
 
 @Component
 class DemandStatusConverterImpl: DemandStatusConverter {
@@ -61,5 +58,13 @@ class DemandStatusConverterImpl: DemandStatusConverter {
             issuerId = issuerId,
             originStatus = it.status,
             reason = reason
+        ) }
+
+    override fun toAcceptMessage(demandStatus: DemandStatusDto, issuerId: Long, assignIp: String): Mono<IpAssignDemandAcceptMessage> =
+        demandStatus.toMono().map { IpAssignDemandAcceptMessage(
+            demandId = it.demandId,
+            issuerId = issuerId,
+            originStatus = it.status,
+            assignIp = assignIp
         ) }
 }
