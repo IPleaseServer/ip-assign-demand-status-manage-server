@@ -6,5 +6,5 @@ data class DemandRejectErrorOnDemandDto (
     val demandId: Long,
     val issuerId: Long,
     val originStatus: DemandStatusType,
-    val message: String
+    val errorMessage: String
 )
