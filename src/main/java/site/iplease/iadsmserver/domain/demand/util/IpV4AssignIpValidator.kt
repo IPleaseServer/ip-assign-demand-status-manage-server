@@ -6,7 +6,7 @@ import reactor.kotlin.core.publisher.toMono
 import site.iplease.iadsmserver.domain.demand.exception.MalformedIpException
 
 @Component
-class AssignIpValidatorImpl: AssignIpValidator {
+class IpV4AssignIpValidator: AssignIpValidator {
     private val regex = Regex("^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}\$")
     override fun validate(assignIp: String): Mono<Unit> =
         assignIp.toMono()
