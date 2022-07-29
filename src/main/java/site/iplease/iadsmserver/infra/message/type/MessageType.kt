@@ -9,6 +9,7 @@ enum class MessageType(val routingKey: String) {
     IP_ASSIGN_DEMAND_CREATE_ERROR_ON_STATUS("ipAssignDemandCreateErrorOnStatus"),
     IP_ASSIGN_DEMAND_CANCEL_ERROR_ON_STATUS("ipAssignDemandCancelErrorOnStatus"),
     IP_ASSIGN_DEMAND_ACCEPT_ERROR_ON_DEMAND("ipAssignDemandAcceptErrorOnDemand"),
+    IP_ASSIGN_DEMAND_REJECT_ERROR_ON_DEMAND("ipAssignDemandRejectErrorOnDemand"),
     SEND_ALARM("sendAlarm"),
     UNKNOWN("");
 
