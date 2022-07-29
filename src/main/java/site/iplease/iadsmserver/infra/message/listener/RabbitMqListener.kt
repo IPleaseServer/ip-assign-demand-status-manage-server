@@ -7,16 +7,22 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandAcceptErrorOnDemandMessage
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCancelMessage
 import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandCreateSubscriber
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandCreateMessage
+import site.iplease.iadsmserver.global.demand.message.IpAssignDemandRejectErrorOnDemandMessage
+import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandAcceptErrorOnDemandSubscriber
 import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandCancelSubscriber
+import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandRejectErrorOnDemandSubscriber
 import site.iplease.iadsmserver.infra.message.type.MessageType
 
 @Component
 class RabbitMqListener(
     private val ipAssignDemandCreateSubscriber: IpAssignDemandCreateSubscriber,
     private val ipAssignDemandCancelSubscriber: IpAssignDemandCancelSubscriber,
+    private val ipAssignDemandAcceptErrorOnDemandSubscriber: IpAssignDemandAcceptErrorOnDemandSubscriber,
+    private val ipAssignDemandRejectErrorOnDemandSubscriber: IpAssignDemandRejectErrorOnDemandSubscriber,
     private val objectMapper: ObjectMapper
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -43,6 +49,12 @@ class RabbitMqListener(
             MessageType.IP_ASSIGN_DEMAND_CANCEL -> objectMapper.toMono()
                 .map { it.readValue(payload, IpAssignDemandCancelMessage::class.java) }
                 .map { message -> ipAssignDemandCancelSubscriber.subscribe(message) }
+            MessageType.IP_ASSIGN_DEMAND_ACCEPT_ERROR_ON_DEMAND -> objectMapper.toMono()
+                .map { it.readValue(payload, IpAssignDemandAcceptErrorOnDemandMessage::class.java) }
+                .map { message -> ipAssignDemandAcceptErrorOnDemandSubscriber.subscribe(message) }
+            MessageType.IP_ASSIGN_DEMAND_REJECT_ERROR_ON_DEMAND -> objectMapper.toMono()
+                .map { it.readValue(payload, IpAssignDemandRejectErrorOnDemandMessage::class.java) }
+                .map { message -> ipAssignDemandRejectErrorOnDemandSubscriber.subscribe(message) }
             else -> {
                 logger.warn("처리대상이 아닌 메세지가 바인딩되어있습니다!")
                 logger.warn("routingKey: ${type.routingKey}")
