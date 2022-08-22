@@ -6,6 +6,7 @@ import reactor.kotlin.core.publisher.toMono
 import site.iplease.iadsmserver.domain.demand.data.dto.DemandDto
 import site.iplease.iadsmserver.domain.demand.data.dto.DemandStatusDto
 import site.iplease.iadsmserver.domain.demand.data.entity.DemandStatus
+import site.iplease.iadsmserver.domain.demand.data.response.DemandStatusResponse
 import site.iplease.iadsmserver.global.demand.message.*
 
 @Component
@@ -66,5 +67,12 @@ class DemandStatusConverterImpl: DemandStatusConverter {
             issuerId = issuerId,
             originStatus = it.status,
             assignIp = assignIp
+        ) }
+
+    override fun toResponse(dto: DemandStatusDto): Mono<DemandStatusResponse> =
+        dto.toMono().map { DemandStatusResponse(
+            id = dto.id,
+            demandId = dto.demandId,
+            status = dto.status
         ) }
 }
