@@ -35,7 +35,7 @@ class IpAssignDemandStatusController(
             .map { response -> ResponseEntity.ok(response) }
 
     @PutMapping("/reject")
-    fun rejectDemand(@RequestHeader("X-Authorize-Id") issuerId: Long,
+    fun rejectDemand(@RequestHeader("X-Authorization-Id") issuerId: Long,
                      @PathVariable demandId: Long,
                      @RequestBody request: RejectDemandRequest): Mono<ResponseEntity<Unit>> =
         demandStatusService.rejectDemand(demandId, request.reason)
@@ -44,7 +44,7 @@ class IpAssignDemandStatusController(
             .map { _ -> ResponseEntity.ok(Unit) }
 
     @PutMapping("/accept")
-    fun acceptDemand(@RequestHeader("X-Authorize-Id") issuerId: Long,
+    fun acceptDemand(@RequestHeader("X-Authorization-Id") issuerId: Long,
                      @PathVariable demandId: Long,
                      @RequestBody request: AcceptDemandRequest
     ): Mono<ResponseEntity<Unit>> =
