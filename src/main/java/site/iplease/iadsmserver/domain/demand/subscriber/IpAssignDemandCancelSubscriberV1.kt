@@ -21,10 +21,11 @@ class IpAssignDemandCancelSubscriberV1(
     override fun subscribe(message: IpAssignDemandCancelMessage) {
         demandConverter.toDto(message)//메세지를 DemandDto로 변환한다.
             .flatMap { demand -> demandStatusService.cancelDemand(demand) }//Service에게로 예약취소로직을 위임한다.
-            .flatMap { _ -> pushAlarmService.publish(message.issuerId, "신청이 취소됬어요!", "마음이 바뀌시면 언제든지 다시 신청해주세요 :>") }//취소 성공시, 유저에게 푸시알람을 전송한다.
+            .flatMap { pushAlarmService.publish(message.issuerId, "신청이 취소됬어요!", "마음이 바뀌시면 언제든지 다시 신청해주세요 :>") }//취소 성공시, 유저에게 푸시알람을 전송한다.
             .onErrorResume { throwable -> //취소 실패시, 예약취소 실패 메세지를 전파한다.
                 demandStatusConverter.toErrorMessage(message, throwable)//예약취소 실패메세지를 구성한다.
                     .flatMap { messagePublishService.publish(MessageType.IP_ASSIGN_DEMAND_CANCEL_ERROR_ON_STATUS, it) } //구성한 실패메세지를 발행한다.
-            }.block()
+            }
+            .block()
     }
 }
