@@ -7,17 +7,20 @@ import site.iplease.iadsmserver.domain.demand.service.DemandErrorService
 import site.iplease.iadsmserver.domain.demand.util.DemandRejectErrorOnDemandConverter
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandRejectErrorOnDemandMessage
 import site.iplease.iadsmserver.global.demand.subscriber.IpAssignDemandRejectErrorOnDemandSubscriber
+import site.iplease.iadsmserver.infra.alarm.service.PushAlarmService
 
 @Component
 class IpAssignDemandRejectErrorOnDemandSubscriberV1(
     private val demandRejectErrorOnDemandConverter: DemandRejectErrorOnDemandConverter,
-    private val demandErrorService: DemandErrorService
+    private val demandErrorService: DemandErrorService,
+    private val pushAlarmService: PushAlarmService
 ): IpAssignDemandRejectErrorOnDemandSubscriber {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun subscribe(message: IpAssignDemandRejectErrorOnDemandMessage) {
         demandRejectErrorOnDemandConverter.convert(message)
             .flatMap { demand ->  demandErrorService.handle(demand) }
+            .flatMap { pushAlarmService.publish(message.issuerId, "신청 거절에 실패했어요!", "자세한 내용은 관리자에게 문의해주세요!") }
             .doOnSuccess { logRollback() }
             .doOnError { logError(it) }
             .onErrorResume { Mono.empty() }
