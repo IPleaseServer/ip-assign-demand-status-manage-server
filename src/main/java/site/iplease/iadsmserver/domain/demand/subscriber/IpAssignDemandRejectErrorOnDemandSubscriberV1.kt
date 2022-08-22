@@ -3,6 +3,7 @@ package site.iplease.iadsmserver.domain.demand.subscriber
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import site.iplease.iadsmserver.domain.demand.data.type.DemandStatusType
 import site.iplease.iadsmserver.domain.demand.service.DemandErrorService
 import site.iplease.iadsmserver.domain.demand.util.DemandRejectErrorOnDemandConverter
 import site.iplease.iadsmserver.global.demand.message.IpAssignDemandRejectErrorOnDemandMessage
@@ -21,14 +22,14 @@ class IpAssignDemandRejectErrorOnDemandSubscriberV1(
         demandRejectErrorOnDemandConverter.convert(message)
             .flatMap { demand ->  demandErrorService.handle(demand) }
             .flatMap { pushAlarmService.publish(message.issuerId, "신청 거절에 실패했어요!", "자세한 내용은 관리자에게 문의해주세요!") }
-            .doOnSuccess { logRollback() }
+            .doOnSuccess { logRollback(message.originStatus) }
             .doOnError { logError(it) }
             .onErrorResume { Mono.empty() }
             .block()
     }
 
-    private fun logRollback() {
-        logger.info("신청 거절에 대한 보상트랜젝션을 성공적으로 수행하였습니다!")
+    private fun logRollback(originStatus: DemandStatusType) {
+        logger.info("신청 거절에 대한 보상트랜젝션을 성공적으로 수행하였습니다! 기존 상태: $originStatus")
     }
 
     private fun logError(throwable: Throwable) {
