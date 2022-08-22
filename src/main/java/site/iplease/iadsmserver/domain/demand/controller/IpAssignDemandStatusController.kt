@@ -20,7 +20,7 @@ import site.iplease.iadsmserver.infra.message.type.MessageType
 
 @Validated
 @RestController
-@RequestMapping("/api/v1/demand/{demandId}/status")
+@RequestMapping("/api/v1/demand/status/{demandId}")
 class IpAssignDemandStatusController(
     private val demandStatusConverter: DemandStatusConverter,
     private val demandStatusService: DemandStatusService,
