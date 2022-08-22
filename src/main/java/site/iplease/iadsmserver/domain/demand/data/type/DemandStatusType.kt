@@ -11,7 +11,8 @@ enum class DemandStatusType {
         private val changeable: Map<DemandStatusType, Set<DemandStatusType>> = mapOf(
             CREATE to setOf(CONFIRM, ACCEPT, REJECT),
             CONFIRM to setOf(CREATE, ACCEPT, REJECT),
-            REJECT to setOf()
+            REJECT to setOf(),
+            ACCEPT to setOf()
         )
         fun isCancellable(status: DemandStatusType): Boolean = cancellable.contains(status)
         fun isChangeable(origin: DemandStatusType, tobe: DemandStatusType): Boolean = changeable[origin]!!.contains(tobe)
